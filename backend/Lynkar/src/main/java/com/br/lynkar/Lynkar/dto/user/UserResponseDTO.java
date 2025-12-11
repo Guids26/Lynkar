@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public class UserResponseDTO {
 	private UUID id;
+	private String name;
 	private String email;
 	private boolean active;
 	private LocalDateTime createdAt;

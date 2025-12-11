@@ -126,5 +126,9 @@ public class UserService {
 
 		return mapper.entityToDTO(user);
 	}
+	
+	public UserResponseDTO showProfile(UUID id) {
+		return this.findById(id).orElseThrow(() -> new LynkarBusinessException("Usuário não encontrado na base."));
+	}
 
 }
