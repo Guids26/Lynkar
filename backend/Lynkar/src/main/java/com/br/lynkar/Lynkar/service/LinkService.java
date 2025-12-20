@@ -1,7 +1,6 @@
 package com.br.lynkar.Lynkar.service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -26,6 +25,9 @@ public class LinkService {
 
 	@Autowired
 	private LinkMapper linkMapper;
+	
+	@Autowired
+	private LinkVisitService linkVisitService;
 
 	public LinkResponseDTO update(LinkEditDTO dto) {
 		LinkEntity link = repository.findById(dto.getId())
@@ -67,6 +69,18 @@ public class LinkService {
 		newShortLink = repository.save(newShortLink);
 		return linkMapper.toDTO(newShortLink);
 	}
+	
+	public LinkResponseDTO findByCode(String code) {
+		LinkEntity link = repository.findFirstByCode(code)
+				.orElseThrow(() -> new LynkarBusinessException("O codigo informado não existe."));
+		return linkMapper.toDTO(link);
+	}
+	
+	public LinkResponseDTO visit(String code) {
+		LinkResponseDTO response = findByCode(code);
+		linkVisitService.registerVisit(response.getId());
+		return response;
+	}
 
 	private String generateNewValidCode() {
 		String code = "";
@@ -103,12 +117,6 @@ public class LinkService {
 			throw new LynkarBusinessException("O codigo personalizado deve estar entre 7 e 10 caracteres.");
 		}
 		return !repository.existsByCode(code);
-	}
-
-	public LinkResponseDTO findByCode(String code) {
-		LinkEntity link = repository.findFirstByCode(code)
-				.orElseThrow(() -> new LynkarBusinessException("O codigo informado não existe."));
-		return linkMapper.toDTO(link);
 	}
 
 }

@@ -1,8 +1,11 @@
 package com.br.lynkar.Lynkar.controller;
 
+import java.net.URI;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +45,11 @@ public class LinkController {
 	public ResponseEntity<ApiResponse<LinkResponseDTO>> update(@RequestBody LinkEditDTO dto, @PathVariable UUID id) {
 		dto.setId(id);
 		return ResponseEntity.ok(ApiResponse.ok(service.update(dto)));
+	}
+	
+	@GetMapping("/redirect/{code}")
+	public ResponseEntity<?> visitLink(@PathVariable String code) throws Exception {
+		return ResponseEntity.status(HttpStatus.FOUND).location(new URI(service.visit(code).getRedirectTo())).build();
 	}
 
 }
